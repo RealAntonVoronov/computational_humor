@@ -4,8 +4,8 @@ src, tgt = sys.argv[1], sys.argv[2]
 
 src_idx = set()
 tgt_idx = set()
-src_langid = open('tmp/'+src+'_lang.txt').readlines()
-tgt_langid = open('tmp/'+tgt+'_lang.txt').readlines()
+src_langid = open('tmp/'+src+'.lang.txt').readlines()
+tgt_langid = open('tmp/'+tgt+'.lang.txt').readlines()
 
 src_lang='pt' if src=='pt_br' else src
 tgt_lang='pt' if tgt=='pt_br' else tgt
