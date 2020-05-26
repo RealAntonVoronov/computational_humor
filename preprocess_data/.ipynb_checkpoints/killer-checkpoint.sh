@@ -1,0 +1,1 @@
+for i in $(seq 7841 7937); do kill $i; done
