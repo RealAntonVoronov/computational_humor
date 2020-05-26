@@ -4,13 +4,19 @@ src, tgt = sys.argv[1], sys.argv[2]
 
 src_idx = set()
 tgt_idx = set()
-src_langid = open('tmp/'+src+'.lang.txt').readlines()
-tgt_langid = open('tmp/'+tgt+'.lang.txt').readlines()
+
+src_langid_name = f'tmp/{src}.lang.txt'
+tgt_langid_name = f'tmp/{tgt}.lang.txt'
+with open(src_langid_name) as s, open(tgt_langid_name) as t:
+    src_langid = s.readlines()
+    tgt_langid = t.readlines()
 
 src_lang='pt' if src=='pt_br' else src
 tgt_lang='pt' if tgt=='pt_br' else tgt
 
 for i in range(len(src_langid)):
+    if i % 1000000 == 0:
+        print(i)
     line = src_langid[i].strip().split() 
     if line[0][2:4] == src_lang and float(line[1][:-1]) > 0.7:
         src_idx.add(i)
@@ -23,14 +29,18 @@ for i in range(len(src_langid)):
         tgt_idx.add(i)
 src_idx.intersection_update(tgt_idx)
 
-src_lines = open('tmp/subs_2m.noneq.single.'+src).readlines()
-tgt_lines = open('tmp/subs_2m.noneq.single.'+tgt).readlines()
+src_name = f'tmp/subs.{src}-{tgt}.length.full.{src}'
+tgt_name = f'tmp/subs.{src}-{tgt}.length.full.{tgt}'
+with open(src_name) as s, open(tgt_name) as t:
+    src_lines = s.readlines()
+    tgt_lines = t.readlines()
+    
+res_src_name = f'tmp/subs.{src}-{tgt}.goodlang.{src}'
+res_tgt_name = f'tmp/subs.{src}-{tgt}.goodlang.{tgt}'
 
-with  open('tmp/subs_2m.noneq.single.goodlang.'+src, 'w') as src, open('tmp/subs_2m.noneq.single.goodlang.'+tgt, 'w') as tgt:
+with  open(res_src_name, 'w') as res_src, open(res_tgt_name, 'w') as res_tgt:
     for i in range(len(src_lines)):
-        l1 = len(src_lines[i].strip().split())
-        l2 = len(tgt_lines[i].strip().split())
-        if i in src_idx and  l1/l2 < 2 and l1/l2 > 0.5 :            
+        if i in src_idx:            
             if src_lines[i][0] == '-':
                 src_lines_towrite = src_lines[i][2:]
             else:
@@ -40,5 +50,5 @@ with  open('tmp/subs_2m.noneq.single.goodlang.'+src, 'w') as src, open('tmp/subs
             else:
                 tgt_lines_towrite = tgt_lines[i]
             if src_lines_towrite and tgt_lines_towrite:
-                src.writelines(src_lines_towrite)
-                tgt.writelines(tgt_lines_towrite)
+                res_src.writelines(src_lines_towrite)
+                res_tgt.writelines(tgt_lines_towrite)
